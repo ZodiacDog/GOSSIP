@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gossip - AI System Integration Layer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header .tagline {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+        
+        .header .subtagline {
+            font-size: 1em;
+            opacity: 0.85;
+            margin-top: 8px;
+            font-style: italic;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .integration-banner {
+            background: linear-gradient(135deg, #F3E7FF 0%, #FFE7F3 100%);
+            border-left: 4px solid #8B5CF6;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        
+        .integration-banner h3 {
+            color: #8B5CF6;
+            margin-bottom: 10px;
+        }
+        
+        .integration-banner ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            color: #8B5CF6;
+        }
+        
+        .tab.active {
+            color: #8B5CF6;
+            border-bottom-color: #8B5CF6;
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input[type="text"],
+        input[type="file"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #8B5CF6;
+        }
+        
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .output-box {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .info-box {
+            background: #F3E7FF;
+            border-left: 4px solid #8B5CF6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .file-list {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .file-item {
+            padding: 8px;
+            background: white;
+            margin: 5px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .remove-file {
+            background: #ff5252;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .specs-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .specs-section h3 {
+            color: #8B5CF6;
+            margin-bottom: 15px;
+        }
+        
+        .specs-section code {
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .specs-section pre {
+            background: #fff;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .integration-card {
+            background: white;
+            border: 2px solid #E9D5FF;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s;
+        }
+        
+        .integration-card:hover {
+            border-color: #8B5CF6;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+        }
+        
+        .integration-card h4 {
+            color: #8B5CF6;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💬 Gossip</h1>
+            <p class="tagline">AI System Integration Layer</p>
+            <p class="subtagline">Let your AIs talk about what they discussed with you</p>
+        </div>
+        
+        <div class="content">
+            <div class="integration-banner">
+                <h3>🔗 What is Gossip?</h3>
+                <p style="margin-bottom: 10px;">Gossip is a <strong>universal integration layer</strong> that enables seamless context transfer between different AI systems. It solves the fundamental interoperability problem in AI conversations.</p>
+                <ul>
+                    <li><strong>Cross-Platform Integration:</strong> Claude → ChatGPT → Gemini → Grok</li>
+                    <li><strong>Context Preservation:</strong> Full reasoning chains, not just text transcripts</li>
+                    <li><strong>System Interoperability:</strong> Universal format any AI can understand</li>
+                    <li><strong>Zero-Lock-In:</strong> Your conversations, portable everywhere</li>
+                </ul>
+            </div>
+            
+            <div class="tab-container">
+                <button class="tab active" onclick="switchTab('create')">Create Gossip</button>
+                <button class="tab" onclick="switchTab('resume')">Resume Conversation</button>
+                <button class="tab" onclick="switchTab('integration')">Integration Guide</button>
+            </div>
+            
+            <!-- CREATE GOSSIP TAB -->
+            <div id="create-tab" class="tab-content active">
+                <div class="info-box">
+                    <strong>💡 How to use:</strong> Fill in the details of your current AI conversation. Gossip will create a portable integration file that any other AI system can use to continue seamlessly.
+                </div>
+                
+                <div class="form-group">
+                    <label>Conversation Topic/Title</label>
+                    <input type="text" id="topic" placeholder="e.g., Space-based Solar Power Economics">
+                </div>
+                
+                <div class="form-group">
+                    <label>Current AI System</label>
+                    <select id="current-ai">
+                        <option value="claude">Claude (Anthropic)</option>
+                        <option value="chatgpt">ChatGPT (OpenAI)</option>
+                        <option value="gemini">Gemini (Google)</option>
+                        <option value="grok">Grok (xAI)</option>
+                        <option value="other">Other AI System</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Conversation Summary (3-5 paragraphs)</label>
+                    <textarea id="summary" placeholder="Summarize what you've discussed so far, including key decisions made and reasoning chains..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Key Points & Decisions (one per line)</label>
+                    <textarea id="keypoints" placeholder="- Decided to target 2050 timeline&#10;- Using exawatt scale approach&#10;- Partnership model: SpaceX + NASA"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Open Questions/Next Steps</label>
+                    <textarea id="openquestions" placeholder="- Need cost sensitivity analysis&#10;- Review radiation shielding specs&#10;- Finalize launch schedule"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Files/Attachments (optional)</label>
+                    <input type="file" id="files" multiple>
+                    <div id="file-list" class="file-list" style="display: none;"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Your Next Question/Instruction</label>
+                    <textarea id="continue-prompt" placeholder="What we'll discuss next when resuming..."></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-primary" onclick="generateGossip()">Generate Gossip</button>
+                    <button class="btn-secondary" onclick="clearForm()">Clear Form</button>
+                </div>
+                
+                <div id="gossip-output"></div>
+            </div>
+            
+            <!-- RESUME CONVERSATION TAB -->
+            <div id="resume-tab" class="tab-content">
+                <div class="info-box">
+                    <strong>📂 How to use:</strong> Upload a Gossip file or paste Gossip text to generate a resume prompt optimized for any AI system.
+                </div>
+                
+                <div class="form-group">
+                    <label>Load Gossip File</label>
+                    <input type="file" id="gossip-file" accept=".gossip,.json,.txt">
+                </div>
+                
+                <div class="form-group">
+                    <label>Or Paste Gossip Text</label>
+                    <textarea id="gossip-text" placeholder="Paste Gossip JSON or formatted text here..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Target AI System</label>
+                    <select id="target-ai">
+                        <option value="universal">Universal (works with any AI)</option>
+                        <option value="claude">Optimized for Claude</option>
+                        <option value="chatgpt">Optimized for ChatGPT</option>
+                        <option value="gemini">Optimized for Gemini</option>
+                        <option value="grok">Optimized for Grok</option>
+                    </select>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-primary" onclick="generateResume()">Generate Resume Prompt</button>
+                </div>
+                
+                <div id="resume-output"></div>
+            </div>
+            
+            <!-- INTEGRATION GUIDE TAB -->
+            <div id="integration-tab" class="tab-content">
+                <h2>System Integration Architecture</h2>
+                <p style="margin: 20px 0; line-height: 1.6;">
+                    Gossip functions as a <strong>universal integration layer</strong> between different AI systems, 
+                    enabling seamless context transfer and conversation continuity across platforms.
+                </p>
+                
+                <div class="specs-section">
+                    <h3>🏗️ Integration Architecture</h3>
+                    <pre>
+┌─────────────┐
+│   Claude    │ ──┐
+└─────────────┘   │
+                  │    ┌──────────────────┐
+┌─────────────┐   ├───▶│  Gossip Format   │◀───┐
+│  ChatGPT    │ ──┘    │ (.gossip files)  │    │
+└─────────────┘        └──────────────────┘    │
+                                                │
+┌─────────────┐                                 │
+│   Gemini    │ ────────────────────────────────┤
+└─────────────┘                                 │
+                                                │
+┌─────────────┐                                 │
+│    Grok     │ ────────────────────────────────┘
+└─────────────┘
+
+<strong>Universal Format = Universal Compatibility</strong></pre>
+                </div>
+                
+                <div class="specs-section">
+                    <h3>🔌 Integration Capabilities</h3>
+                    <div class="integration-grid">
+                        <div class="integration-card">
+                            <h4>Cross-Platform Transfer</h4>
+                            <p>Move conversations between any AI systems without context loss</p>
+                        </div>
+                        <div class="integration-card">
+                            <h4>API Integration</h4>
+                            <p>Programmatic access via Python library and REST endpoints</p>
+                        </div>
+                        <div class="integration-card">
+                            <h4>File System Integration</h4>
+                            <p>Base64-encoded attachments travel with context</p>
+                        </div>
+                        <div class="integration-card">
+                            <h4>Workflow Integration</h4>
+                            <p>Chain multiple AI systems in automated pipelines</p>
+                        </div>
+                        <div class="integration-card">
+                            <h4>Browser Integration</h4>
+                            <p>One-click capture from any web-based AI interface</p>
+                        </div>
+                        <div class="integration-card">
+                            <h4>Storage Integration</h4>
+                            <p>Compatible with cloud storage, Git, databases</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="specs-section">
+                    <h3>📋 Gossip File Format (.gossip)</h3>
+                    <p>JSON-based portable format with universal AI compatibility</p>
+                    <pre>{
+  "version": "1.0",
+  "gossip_id": "unique-identifier",
+  "created": "2025-12-17T00:00:00Z",
+  "metadata": {
+    "topic": "Conversation topic",
+    "source_ai": "claude",
+    "created_by": "Gossip v1.0"
+  },
+  "context": {
+    "summary": "Full conversation context...",
+    "key_points": ["Point 1", "Point 2"],
+    "open_questions": ["Question 1"]
+  },
+  "files": [
+    {
+      "name": "document.pdf",
+      "type": "application/pdf",
+      "encoding": "base64",
+      "data": "base64-encoded-content"
+    }
+  ],
+  "continuation": "Next instruction..."
+}</pre>
+                </div>
+                
+                <div class="specs-section">
+                    <h3>🌐 System Interoperability Benefits</h3>
+                    <ul style="line-height: 2; margin-left: 20px;">
+                        <li><strong>No Vendor Lock-In:</strong> Switch AI providers freely</li>
+                        <li><strong>Multi-AI Workflows:</strong> Use each AI's strengths in sequence</li>
+                        <li><strong>Disaster Recovery:</strong> Never lose conversation context</li>
+                        <li><strong>Collaborative Work:</strong> Share exact context with colleagues</li>
+                        <li><strong>System Redundancy:</strong> Continue if one AI is unavailable</li>
+                        <li><strong>Performance Optimization:</strong> Reset without losing context</li>
+                    </ul>
+                </div>
+                
+                <div class="specs-section">
+                    <h3>🛠️ Integration Examples</h3>
+                    <p><strong>Multi-System Workflow:</strong></p>
+                    <pre>1. Research with Claude → Create Gossip
+2. Code implementation with ChatGPT → Create Gossip
+3. Testing strategy with Gemini → Create Gossip
+4. Final review with Grok → Complete</pre>
+                    
+                    <p style="margin-top: 15px;"><strong>Backup & Recovery:</strong></p>
+                    <pre>1. Critical conversation in progress
+2. Create Gossip every 30 minutes
+3. System crash or limit hit
+4. Resume from last Gossip in any AI</pre>
+                    
+                    <p style="margin-top: 15px;"><strong>Team Collaboration:</strong></p>
+                    <pre>1. Developer A analyzes requirements with Claude
+2. Creates Gossip file
+3. Developer B imports to ChatGPT
+4. Continues implementation seamlessly</pre>
+                </div>
+                
+                <div class="success-box">
+                    <strong>✨ Open Standard:</strong> Gossip is designed to become a community-driven standard 
+                    for AI conversation portability. Build plugins, extensions, and integrations freely.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+        
+        // File handling
+        let uploadedFiles = [];
+        
+        document.getElementById('files').addEventListener('change', async function(e) {
+            const fileList = document.getElementById('file-list');
+            
+            for (let file of e.target.files) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    uploadedFiles.push({
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        data: event.target.result.split(',')[1]
+                    });
+                    updateFileList();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        function updateFileList() {
+            const fileList = document.getElementById('file-list');
+            if (uploadedFiles.length === 0) {
+                fileList.style.display = 'none';
+                return;
+            }
+            
+            fileList.style.display = 'block';
+            fileList.innerHTML = uploadedFiles.map((file, index) => `
+                <div class="file-item">
+                    <span>📎 ${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
+                    <button class="remove-file" onclick="removeFile(${index})">Remove</button>
+                </div>
+            `).join('');
+        }
+        
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            updateFileList();
+        }
+        
+        // Generate Gossip
+        function generateGossip() {
+            const topic = document.getElementById('topic').value;
+            const currentAI = document.getElementById('current-ai').value;
+            const summary = document.getElementById('summary').value;
+            const keypoints = document.getElementById('keypoints').value;
+            const openQuestions = document.getElementById('openquestions').value;
+            const continuePrompt = document.getElementById('continue-prompt').value;
+            
+            if (!topic || !summary) {
+                alert('Please fill in at least the Topic and Summary fields');
+                return;
+            }
+            
+            const gossip = {
+                version: "1.0",
+                gossip_id: generateId(),
+                created: new Date().toISOString(),
+                metadata: {
+                    topic: topic,
+                    source_ai: currentAI,
+                    created_by: "Gossip v1.0"
+                },
+                context: {
+                    summary: summary,
+                    key_points: keypoints.split('\n').filter(line => line.trim()),
+                    open_questions: openQuestions.split('\n').filter(line => line.trim())
+                },
+                files: uploadedFiles.map(f => ({
+                    name: f.name,
+                    type: f.type,
+                    size: f.size,
+                    encoding: "base64",
+                    data: f.data
+                })),
+                continuation: continuePrompt
+            };
+            
+            displayGossip(gossip);
+        }
+        
+        function displayGossip(gossip) {
+            const output = document.getElementById('gossip-output');
+            
+            const humanReadable = generateHumanReadableGossip(gossip);
+            const json = JSON.stringify(gossip, null, 2);
+            
+            output.innerHTML = `
+                <div class="success-box">
+                    <strong>✅ Gossip Generated Successfully!</strong><br>
+                    This portable format can be used with any AI system.
+                </div>
+                
+                <h3 style="margin-top: 20px;">Human-Readable Format (Copy to any AI):</h3>
+                <div class="output-box">${humanReadable}</div>
+                <button class="btn-secondary" onclick="copyToClipboard('human-readable')">📋 Copy to Clipboard</button>
+                
+                <h3 style="margin-top: 20px;">JSON Format (for system integration):</h3>
+                <div class="output-box" id="json-output">${json}</div>
+                <button class="btn-secondary" onclick="copyToClipboard('json')">📋 Copy JSON</button>
+                
+                <div class="button-group" style="margin-top: 20px;">
+                    <button class="btn-primary" onclick="downloadGossip('json')">💾 Download as .gossip</button>
+                    <button class="btn-primary" onclick="downloadGossip('txt')">💾 Download as .txt</button>
+                </div>
+            `;
+            
+            window.currentGossip = gossip;
+            window.currentHumanReadable = humanReadable;
+        }
+        
+        function generateHumanReadableGossip(g) {
+            let output = `# GOSSIP [ID: ${g.gossip_id}]
+═══════════════════════════════════════════════════════════
+AI Conversation Context Transfer File
+Created by Gossip - Universal AI Integration Layer
+═══════════════════════════════════════════════════════════
+
+**Topic:** ${g.metadata.topic}
+**Source AI:** ${g.metadata.source_ai}
+**Created:** ${new Date(g.created).toLocaleString()}
+
+═══════════════════════════════════════════════════════════
+## CONVERSATION CONTEXT
+
+${g.context.summary}
+
+═══════════════════════════════════════════════════════════
+## KEY POINTS & DECISIONS
+
+${g.context.key_points.map(point => `• ${point.replace(/^-\s*/, '')}`).join('\n')}
+
+═══════════════════════════════════════════════════════════
+## OPEN QUESTIONS / NEXT STEPS
+
+${g.context.open_questions.map(q => `• ${q.replace(/^-\s*/, '')}`).join('\n')}`;
+
+            if (g.files && g.files.length > 0) {
+                output += `\n\n═══════════════════════════════════════════════════════════
+## ATTACHED FILES
+
+${g.files.map(f => `• ${f.name} (${f.type}, ${(f.size / 1024).toFixed(1)} KB)`).join('\n')}
+
+[Files are base64-encoded in the full Gossip JSON format]`;
+            }
+
+            if (g.continuation) {
+                output += `\n\n═══════════════════════════════════════════════════════════
+## CONTINUE FROM HERE:
+
+${g.continuation}`;
+            }
+
+            output += `\n\n═══════════════════════════════════════════════════════════
+## INSTRUCTIONS FOR AI SYSTEMS:
+
+This is a Gossip file - a universal context transfer format for AI systems.
+Please read this entire context carefully. This represents a conversation 
+from another AI system (${g.metadata.source_ai}) that should continue seamlessly 
+in your system.
+
+Treat this as if you've been having this conversation yourself. Reference 
+the key points and decisions made, acknowledge the open questions, and pick 
+up from the "Continue from here" section.
+
+If files are referenced but not accessible in your system, acknowledge them 
+and proceed based on the context provided.
+
+Gossip enables AI interoperability. Honor the context and maintain continuity.
+═══════════════════════════════════════════════════════════`;
+
+            return output;
+        }
+        
+        // Generate resume prompt
+        function generateResume() {
+            const gossipFile = document.getElementById('gossip-file').files[0];
+            const gossipText = document.getElementById('gossip-text').value;
+            const targetAI = document.getElementById('target-ai').value;
+            
+            if (!gossipFile && !gossipText) {
+                alert('Please upload a Gossip file or paste Gossip text');
+                return;
+            }
+            
+            if (gossipFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    processGossipForResume(e.target.result, targetAI);
+                };
+                reader.readAsText(gossipFile);
+            } else {
+                processGossipForResume(gossipText, targetAI);
+            }
+        }
+        
+        function processGossipForResume(text, targetAI) {
+            let gossip;
+            
+            try {
+                gossip = JSON.parse(text);
+            } catch {
+                const resumePrompt = text;
+                displayResumePrompt(resumePrompt, targetAI);
+                return;
+            }
+            
+            const resumePrompt = generateOptimizedPrompt(gossip, targetAI);
+            displayResumePrompt(resumePrompt, targetAI);
+        }
+        
+        function generateOptimizedPrompt(gossip, targetAI) {
+            const basePrompt = generateHumanReadableGossip(gossip);
+            
+            const optimizations = {
+                'claude': '\n\n[Gossip Integration Note for Claude: This context comes from another AI system. Please maintain the analytical depth and reasoning quality established in the original conversation.]',
+                'chatgpt': '\n\n[Gossip Integration Note for ChatGPT: Continue this conversation with the same level of detail and context awareness as the original AI system.]',
+                'gemini': '\n\n[Gossip Integration Note for Gemini: This is a Gossip context transfer from another AI. Please continue seamlessly from where the previous system left off.]',
+                'grok': '\n\n[Gossip Integration Note for Grok: Picking up from another AI via Gossip. Keep the same energy and depth.]',
+                'universal': ''
+            };
+            
+            return basePrompt + (optimizations[targetAI] || optimizations['universal']);
+        }
+        
+        function displayResumePrompt(prompt, targetAI) {
+            const output = document.getElementById('resume-output');
+            
+            output.innerHTML = `
+                <div class="success-box">
+                    <strong>✅ Resume Prompt Generated!</strong><br>
+                    Optimized for: ${targetAI === 'universal' ? 'Universal AI Integration' : targetAI.toUpperCase()}
+                </div>
+                
+                <h3 style="margin-top: 20px;">Copy this and paste into ${targetAI === 'universal' ? 'any AI system' : targetAI.toUpperCase()}:</h3>
+                <div class="output-box">${prompt}</div>
+                
+                <button class="btn-primary" onclick="copyResumePrompt()">📋 Copy Resume Prompt</button>
+            `;
+            
+            window.currentResumePrompt = prompt;
+        }
+        
+        // Utility functions
+        function generateId() {
+            return 'gossip_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+        
+        function copyToClipboard(type) {
+            const text = type === 'json' ? 
+                JSON.stringify(window.currentGossip, null, 2) : 
+                window.currentHumanReadable;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
+        }
+        
+        function copyResumePrompt() {
+            navigator.clipboard.writeText(window.currentResumePrompt).then(() => {
+                alert('Resume prompt copied to clipboard!');
+            });
+        }
+        
+        function downloadGossip(format) {
+            let content, filename, mimeType;
+            
+            if (format === 'json') {
+                content = JSON.stringify(window.currentGossip, null, 2);
+                filename = `gossip_${window.currentGossip.gossip_id}.gossip`;
+                mimeType = 'application/json';
+            } else {
+                content = window.currentHumanReadable;
+                filename = `gossip_${window.currentGossip.gossip_id}.txt`;
+                mimeType = 'text/plain';
+            }
+            
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function clearForm() {
+            document.getElementById('topic').value = '';
+            document.getElementById('summary').value = '';
+            document.getElementById('keypoints').value = '';
+            document.getElementById('openquestions').value = '';
+            document.getElementById('continue-prompt').value = '';
+            uploadedFiles = [];
+            updateFileList();
+            document.getElementById('gossip-output').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
