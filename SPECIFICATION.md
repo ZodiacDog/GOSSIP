@@ -590,9 +590,8 @@ python gossip.py info <file>  # Validate and show stats
 ```
 
 **Community**:
-- Discord: (community server)
-- Email: (support contact)
-- Documentation: (website)
+
+- Email: maesonsfarms@gmail.com (be nice or ignored)
 
 ---
 
@@ -608,3 +607,5 @@ Free to use, implement, extend, and distribute without restrictions.
 **Gossip v1.0: Universal AI System Integration Layer**
 
 *Enabling seamless context transfer across AI platforms*
+
+by ML aka ZodiacDog
